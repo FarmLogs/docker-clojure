@@ -17,4 +17,4 @@ RUN apt-get purge \
     && apt-get autoremove \
     && rm -rf /tmp/*
 
-COPY ./docker-run.sh /app/
+COPY ./docker-run.sh /bin/
