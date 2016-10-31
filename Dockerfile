@@ -16,3 +16,5 @@ RUN curl -s -O http://www.ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/wgrib2.tgz \
 RUN apt-get purge \
     && apt-get autoremove \
     && rm -rf /tmp/*
+
+COPY ./docker-run.sh /app/
