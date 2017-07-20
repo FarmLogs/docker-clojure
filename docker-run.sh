@@ -11,6 +11,9 @@ if [ -z "${JVM_OPTS:-}" ]; then
   JVM_OPTS=""
 fi
 
+export JVM_OPTS
+JVM_OPTS="$(/bin/jvm-opts-with-defaults.sh)"
+
 JAVA=$(which java)
 
 cmd="${JAVA} ${JVM_OPTS} -jar $(ls *-standalone.jar) $*"
