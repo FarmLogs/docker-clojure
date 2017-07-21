@@ -58,7 +58,7 @@ cgroups_core_limit() {
 
 cgroups_max_memory() {
   # High number which is the max limit unti which memory is supposed to be
-  # unbounded. 
+  # unbounded.
   local max_mem_unbounded="$(cat /sys/fs/cgroup/memory/memory.memsw.limit_in_bytes)"
   local mem_file="/sys/fs/cgroup/memory/memory.limit_in_bytes"
   if [ -r "${mem_file}" ]; then
@@ -69,11 +69,17 @@ cgroups_max_memory() {
   fi
 }
 
+opts_have() {
+  if echo "${JVM_OPTS}" | grep -q -- "$1"; then
+    echo "true"
+  fi
+}
+
 # Check for memory options and calculate a sane default if not given
 max_memory() {
   # Check whether -Xmx is already given in JVM_OPTS. Then we dont
   # do anything here
-  if echo "${JVM_OPTS}" | grep -q -- "-Xmx"; then
+  if [ "$(opts_have '-Xmx')" = true ]; then
     return
   fi
 
@@ -109,5 +115,22 @@ out_of_memory() {
   echo '"-XX:OnOutOfMemoryError=kill -9 %p"'
 }
 
+expose_jmx() {
+  if [ "$(opts_have 'com.sun.management.jmx')" = true ]; then
+    return
+  fi
+
+  if [ "x$JVM_EXPOSE_JMX" = "xfalse" ]; then
+    return
+  fi
+    
+  echo "-Dcom.sun.management.jmxremote.authenticate=false " \
+       "-Dcom.sun.management.jmxremote.ssl=false " \
+       "-Dcom.sun.management.jmxremote.local.only=false " \
+       "-Dcom.sun.management.jmxremote.port=1099 " \
+       "-Dcom.sun.management.jmxremote.rmi.port=1099 " \
+       "-Djava.rmi.server.hostname=127.0.0.1"
+}
+
 # Echo options, trimming trailing and multiple spaces
-echo "$(max_memory) $(cpu_core_tunning) $(out_of_memory) $JVM_OPTS" | awk '$1=$1'
+echo "$(max_memory) $(cpu_core_tunning) $(out_of_memory) $(expose_jmx) $JVM_OPTS" | awk '$1=$1'
