@@ -18,3 +18,5 @@ RUN apt-get purge \
     && rm -rf /tmp/*
 
 COPY *.sh /bin/
+
+ENTRYPOINT ["/bin/docker-run.sh"]

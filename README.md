@@ -59,5 +59,6 @@ ENV JVM_MAX_MEM_RATIO=75
 # disable exposing JMX, it's exposed by default
 ENV JVM_EXPOSE_JMX=false
 
-ENTRYPOINT ["/bin/docker-run.sh"]
+# optional, will be passed as args to the jvm process started by /bin/docker-run.sh
+CMD ["stuff" "and" "things"]
 ```
