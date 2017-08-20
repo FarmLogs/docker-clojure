@@ -8,16 +8,16 @@ command line JVM_OPTS.
 
 ## Default options
 
-Since the JVM can't yet honor cgroups limits when in a container,
-`docker-run.sh` will add the following to the `JVM_OPTS` set by the
-child container:
+Since the JVM doesn't honor cgroups memory limits for calculating the
+default heap size when in a container, `docker-run.sh` will add the
+following to the `JVM_OPTS` set by the child container:
 
-* if `Xmx` (max heap size) isn't set and a memory resource limit is
-  applied to the container, it calculates an `Xmx` that is 50% of the
-  memory limit (the percentage can be overridden by setting
-  `JVM_MAX_MEM_RATIO`)
-* if a cpu/core resource limit is applied to the container, it sets
-  some properties that control the number of threads for GC, etc
+* if `Xmx` (max heap size) isn't set, it enables experimental heap
+  size calculation based on any cgroup memory limits. By default, it
+  will try to use close to 100% of the memory limit. You can Adjust
+  that by adding `-XX:MaxRAMFraction=n` to `JVM_OPTS`, where `n` is a
+  whole number used to divide the available memory by (so 1 = 100%, 2
+  = 50%, etc). Defaults to 1.
 * it adds an option that causes the JVM to kill itself if it runs out
   of memory
 * it adds properties to enable connecting to JMX remotely. This can be
@@ -52,9 +52,6 @@ RUN ["/bin/bash", "-c", "lein uberjar && cp target/*-standalone.jar ./"]
 
 # optional, set any custom jvm options
 ENV JVM_OPTS="-Duser.timezone=UTC"
-
-# optional, override the default Xmx percentage (default is 50)
-ENV JVM_MAX_MEM_RATIO=75
 
 # disable exposing JMX, it's exposed by default
 ENV JVM_EXPOSE_JMX=false
