@@ -56,6 +56,9 @@ has "$opts" '"-XX:OnOutOfMemoryError=kill -9 %p"'
 ## jmx
 has "$opts" '-Dcom.sun.management'
 
+## disable fast throw
+has "$opts" '-XX:-OmitStackTraceInFastThrow'
+
 # custom ram fraction
 opts="$(run '-e JVM_OPTS="-XX:MaxRAMFraction=2"')"
 has "$opts" '-XX:+UnlockExperimentalVMOptions'
@@ -78,6 +81,10 @@ missing "$opts" '"-XX:OnOutOfMemoryError=kill -9 %p"'
 # disable jmx
 opts="$(run '-e JVM_EXPOSE_JMX=false')"
 missing "$opts" '-Dcom.sun.management'
+
+# enabling fast throw
+opts="$(run '-e JVM_FAST_THROW=true')"
+missing "$opts" '-XX:-OmitStackTraceInFastThrow'
 
 # random option survives
 opts="$(run '-e JVM_OPTS=-Dwhatevs')"

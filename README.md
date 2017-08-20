@@ -12,8 +12,8 @@ Since the JVM doesn't honor cgroups memory limits for calculating the
 default heap size when in a container, `docker-run.sh` will add the
 following to the `JVM_OPTS` set by the child container:
 
-* if `Xmx` (max heap size) isn't set, it enables experimental heap
-  size calculation based on any cgroup memory limits. By default, it
+* if `Xmx` (max heap size) isn't set, it enables [experimental heap
+  size calculation][1] based on any cgroup memory limits. By default, it
   will try to use close to 100% of the memory limit. You can Adjust
   that by adding `-XX:MaxRAMFraction=n` to `JVM_OPTS`, where `n` is a
   whole number used to divide the available memory by (so 1 = 100%, 2
@@ -22,6 +22,9 @@ following to the `JVM_OPTS` set by the child container:
   of memory
 * it adds properties to enable connecting to JMX remotely. This can be
   disabled by setting `JVM_EXPOSE_JMX` to `"false"`.
+* it [disables eliding stack traces][2] for "fast throw" exceptions to
+  allow full stack traces to be reported to sentry. This can be
+  disabled by setting `JVM_FAST_THROW` to `"true"`.
   
 ## Connecting to JMX in a container in kube
 
@@ -59,3 +62,6 @@ ENV JVM_EXPOSE_JMX=false
 # optional, will be passed as args to the jvm process started by /bin/docker-run.sh
 CMD ["stuff" "and" "things"]
 ```
+
+[1]: https://dzone.com/articles/running-a-jvm-in-a-container-without-getting-kille
+[2]: https://stackoverflow.com/questions/4659151/recurring-exception-without-a-stack-trace-how-to-reset#4659279

@@ -11,6 +11,8 @@
 #
 # JVM_OPTS: Checked for already set options
 # JVM_EXPOSE_JMX: if == 'false', jmx is not exposed
+# JVM_FAST_THROW: prevents adding the option that tells the JVM to keep
+#                 stack traces for "fast throw" exceptions
 
 opts_have() {
     echo "${JVM_OPTS}" | grep -q -- "$1"
@@ -63,5 +65,17 @@ expose_jmx() {
        "-Djava.rmi.server.hostname=127.0.0.1"
 }
 
+disable_fast_throw() {
+  if $(opts_have '-XX:-OmitStackTraceInFastThrow'); then
+    return
+  fi
+
+  if [ "x$JVM_FAST_THROW" = "xtrue" ]; then
+    return
+  fi
+
+  echo "-XX:-OmitStackTraceInFastThrow"
+}
+
 # Echo options, trimming trailing and multiple spaces
-echo "$(enable_cgroup_limits) $(max_ram_fraction) $(out_of_memory) $(expose_jmx) $JVM_OPTS" | awk '$1=$1'
+echo "$(enable_cgroup_limits) $(max_ram_fraction) $(out_of_memory) $(disable_fast_throw) $(expose_jmx) $JVM_OPTS" | awk '$1=$1'
