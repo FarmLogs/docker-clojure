@@ -1,6 +1,8 @@
-name = quay.io/farmlogs/clojure
-version = v2
+name = docker.farmlogsdev.com/clojure
+version = latest
 tag = $(name):$(version)
+
+.PHONY: all build build-test-image clean push test
 
 all: test
 
