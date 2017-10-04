@@ -34,7 +34,7 @@ following to the `JVM_OPTS` set by the child container:
 ## Example Dockerfile
 
 ```
-FROM quay.io/farmlogs/clojure
+FROM docker.farmlogsdev.com/clojure
 
 # Copy the project file first
 # This allows us to take advantage of caching for the
@@ -55,6 +55,9 @@ RUN ["/bin/bash", "-c", "lein uberjar && cp target/*-standalone.jar ./"]
 
 # optional, set any custom jvm options
 ENV JVM_OPTS="-Duser.timezone=UTC"
+
+# optional, specify the path to the jar (default will look for *-standalone.jar)
+ENV JAR_FILE="target/app.jar"
 
 # disable exposing JMX, it's exposed by default
 ENV JVM_EXPOSE_JMX=false
