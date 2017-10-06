@@ -20,15 +20,17 @@ following to the `JVM_OPTS` set by the child container:
   = 50%, etc). Defaults to 1.
 * it adds an option that causes the JVM to kill itself if it runs out
   of memory
-* it adds properties to enable connecting to JMX remotely. This can be
-  disabled by setting `JVM_EXPOSE_JMX` to `"false"`.
+* it optionally adds properties to enable connecting to JMX
+  remotely. This can be enabled by setting `JVM_EXPOSE_JMX` to
+  `"true"`.
 * it [disables eliding stack traces][2] for "fast throw" exceptions to
   allow full stack traces to be reported to sentry. This can be
   disabled by setting `JVM_FAST_THROW` to `"true"`.
   
 ## Connecting to JMX in a container in kube
-
-1. `kubectl port-forward <pod name> 1099`
+  
+1. set `ENV JVM_EXPOSE_JMX=true` in your `Dockerfile` 
+2. `kubectl port-forward <pod name> 1099`
 2. `jconsole localhost:1099`
 
 ## Example Dockerfile
@@ -59,8 +61,8 @@ ENV JVM_OPTS="-Duser.timezone=UTC"
 # optional, specify the path to the jar (default will look for *-standalone.jar)
 ENV JAR_FILE="target/app.jar"
 
-# disable exposing JMX, it's exposed by default
-ENV JVM_EXPOSE_JMX=false
+# optional, expose JMX
+ENV JVM_EXPOSE_JMX=true
 
 # optional, will be passed as args to the jvm process started by /bin/docker-run.sh
 CMD ["stuff" "and" "things"]

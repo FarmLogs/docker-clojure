@@ -53,7 +53,7 @@ expose_jmx() {
     return
   fi
 
-  if [ "x$JVM_EXPOSE_JMX" = "xfalse" ]; then
+  if [ "x$JVM_EXPOSE_JMX" != "xtrue" ]; then
     return
   fi
     
